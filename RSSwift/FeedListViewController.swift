@@ -11,7 +11,6 @@ class FeedListViewController: UITableViewController, XMLParserDelegate {
 
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 140
-        tableView.backgroundColor = UIColorFromRGB(rgbValue: 0xdf4926)
         self.tableView.dataSource = self
         self.tableView.delegate = self
 
@@ -24,7 +23,7 @@ class FeedListViewController: UITableViewController, XMLParserDelegate {
     }
 
     func loadData() {
-        url = URL(string: "https://www.nasa.gov/rss/dyn/breaking_news.rss")!
+        url = URL(string: "https://www.news.google.com/rss")!
         loadRss(url);
     }
 
@@ -75,7 +74,6 @@ class FeedListViewController: UITableViewController, XMLParserDelegate {
         
         cellImageLayer!.cornerRadius = 35
         cellImageLayer!.masksToBounds = true
-        cellBGColorView.backgroundColor = .orange
         
         if indexPath.row % 2 == 0 {
             cell.backgroundColor = UIColor(white: 1, alpha: 0)

@@ -10,7 +10,7 @@ class FeedItemWebViewController: UIViewController {
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView()
         spinner.translatesAutoresizingMaskIntoConstraints = false
-        spinner.color = .orange
+        spinner.color = .black
         spinner.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
         return spinner
     }()
