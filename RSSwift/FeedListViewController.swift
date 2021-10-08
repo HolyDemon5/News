@@ -65,16 +65,16 @@ class FeedListViewController: UITableViewController, XMLParserDelegate {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         let cellBGColorView = UIView()
-        let cellImageLayer: CALayer?  = cell.imageView?.layer
-        let url = NSURL(string:feedImgs[indexPath.row] as! String)
-        let data = NSData(contentsOf:url! as URL)
-        var image = UIImage(data:data! as Data)
-        
-        image = resizeImage(image: image!, toTheSize: CGSize(width: 70, height: 70))
-        
-        cellImageLayer!.cornerRadius = 35
-        cellImageLayer!.masksToBounds = true
-        
+        if feedImgs.count > indexPath.row {
+            let cellImageLayer: CALayer?  = cell.imageView?.layer
+            let url = NSURL(string:feedImgs[indexPath.row] as! String)
+            let data = NSData(contentsOf:url! as URL)
+            var image = UIImage(data:data! as Data)
+            image = resizeImage(image: image!, toTheSize: CGSize(width: 70, height: 70))
+            cellImageLayer!.cornerRadius = 35
+            cellImageLayer!.masksToBounds = true
+            cell.imageView?.image = image
+        }
         if indexPath.row % 2 == 0 {
             cell.backgroundColor = UIColor(white: 1, alpha: 0)
         } else {
@@ -84,7 +84,6 @@ class FeedListViewController: UITableViewController, XMLParserDelegate {
         cell.textLabel?.backgroundColor = UIColor.clear
         cell.detailTextLabel?.backgroundColor = UIColor.clear
         cell.selectedBackgroundView = cellBGColorView
-        cell.imageView?.image = image
         cell.textLabel?.text = (myFeed.object(at: indexPath.row) as AnyObject).object(forKey: "title") as? String
         cell.textLabel?.textColor = UIColor.white
         cell.textLabel?.numberOfLines = 0
