@@ -1,11 +1,12 @@
 import UIKit
 
-class FeedListViewController: UITableViewController, XMLParserDelegate {
+class FeedListViewController: UITableViewController, XMLParserDelegate, UISearchResultsUpdating, UISearchBarDelegate {
 
     var myFeed : NSArray = []
     var feedImgs: [AnyObject] = []
     var url: URL!
-
+    var text: String!
+    let searchController = UISearchController()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -13,7 +14,9 @@ class FeedListViewController: UITableViewController, XMLParserDelegate {
         tableView.estimatedRowHeight = 140
         self.tableView.dataSource = self
         self.tableView.delegate = self
-
+        searchController.searchBar.delegate = self
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
         loadData()
     }
 
@@ -21,23 +24,32 @@ class FeedListViewController: UITableViewController, XMLParserDelegate {
 
         loadData()
     }
-
+    
     func loadData() {
         url = URL(string: "https://www.news.google.com/rss")!
         loadRss(url);
     }
-
+    func loadData2(_ s: String) {
+       url = URL(string: "https://news.google.com/rss/search?q="+s)!
+       loadRss(url);
+   }
+    
     func loadRss(_ data: URL) {
-
-        // XmlParserManager instance/object/variable.
         let myParser : XmlParserManager = XmlParserManager().initWithURL(data) as! XmlParserManager
-
-        // Put feed in array.
+       
         feedImgs = myParser.img as [AnyObject]
         myFeed = myParser.feeds
         tableView.reloadData()
     }
-
+    
+    func updateSearchResults(for searchController: UISearchController) {
+       text = searchController.searchBar.text!
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        loadData2(text)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -65,22 +77,23 @@ class FeedListViewController: UITableViewController, XMLParserDelegate {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         let cellBGColorView = UIView()
+        var image: UIImage!
         if feedImgs.count > indexPath.row {
             let cellImageLayer: CALayer?  = cell.imageView?.layer
             let url = NSURL(string:feedImgs[indexPath.row] as! String)
             let data = NSData(contentsOf:url! as URL)
-            var image = UIImage(data:data! as Data)
+            image = UIImage(data:data! as Data)
             image = resizeImage(image: image!, toTheSize: CGSize(width: 70, height: 70))
             cellImageLayer!.cornerRadius = 35
             cellImageLayer!.masksToBounds = true
-            cell.imageView?.image = image
+            cellBGColorView.backgroundColor = .black
         }
         if indexPath.row % 2 == 0 {
             cell.backgroundColor = UIColor(white: 1, alpha: 0)
         } else {
             cell.backgroundColor = UIColor(white: 1, alpha: 0.1)
         }
-        
+        cell.imageView?.image = image
         cell.textLabel?.backgroundColor = UIColor.clear
         cell.detailTextLabel?.backgroundColor = UIColor.clear
         cell.selectedBackgroundView = cellBGColorView
@@ -94,14 +107,6 @@ class FeedListViewController: UITableViewController, XMLParserDelegate {
         return cell
     }
 
-    func UIColorFromRGB(rgbValue: UInt) -> UIColor {
-        return UIColor(
-            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: CGFloat(1.0)
-        )
-    }
 
     func resizeImage(image:UIImage, toTheSize size:CGSize)->UIImage{
 
